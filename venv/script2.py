@@ -15,26 +15,26 @@ def es_color_rojo(coordenadaX,coordenadaY):
     print(f"COLOR: {color}")
     return color == rojo
 
-def es_color_rojo_proceso():
+def es_color_rojo_proceso(red_err_list):
     #x,y = pyautogui.position()
     rojo = (187, 0, 0)  # Color rojo en formato (R, G, B)
-    color = pyautogui.pixel(577,468)  # Obtiene el color del píxel en las coordenadas dadas
+    color = pyautogui.pixel(red_err_list.x,red_err_list.y)  # Obtiene el color del píxel en las coordenadas dadas
     return color == rojo
-def es_color_rojo_proceso_recosteo():
+def es_color_rojo_proceso_recosteo(red_err_reco):
     #x,y = pyautogui.position()
     rojo = (187, 0, 0)  # Color rojo en formato (R, G, B)
-    color = pyautogui.pixel(1150,888)  # Obtiene el color del píxel en las coordenadas dadas
+    color = pyautogui.pixel(red_err_reco.x,red_err_reco.y)  # Obtiene el color del píxel en las coordenadas dadas
     return color == rojo
 
-def es_color_negro_proceso_recosteo():
+def es_color_negro_proceso_recosteo(black_process_reco):
     #x,y = pyautogui.position()
     negro = (0, 0, 0)  # Color rojo en formato (R, G, B)
-    color = pyautogui.pixel(1188,809)  # Obtiene el color del píxel en las coordenadas dadas
+    color = pyautogui.pixel(black_process_reco.x,black_process_reco.y)  # Obtiene el color del píxel en las coordenadas dadas
     return color == negro
-def es_color_verde_proceso_recosteo_final():
+def es_color_verde_proceso_recosteo_final(green_end_process_reco):
     #x,y = pyautogui.position()
     verde = (0, 255, 0)  # Color rojo en formato (R, G, B)
-    color = pyautogui.pixel(1031,890) # Obtiene el color del píxel en las coordenadas dadas
+    color = pyautogui.pixel(green_end_process_reco.x,green_end_process_reco.y) # Obtiene el color del píxel en las coordenadas dadas
     return color == verde
 
 def sustraendo(valor:int,num_error:int):
@@ -81,6 +81,7 @@ def costear_ultimo_valor(valor: int , valorFinal: int):
 def generar_valor(valorInicial:int, valorFinal:int):
     global valor,valor_inicial,valor_final,proceso_abierto
     valor = valorInicial
+    click_change_page_list(point_list_page)
     time.sleep(2)
     if valor == valorFinal:
         valor_inicial = 0
@@ -92,15 +93,18 @@ def generar_valor(valorInicial:int, valorFinal:int):
     while valor > valorFinal and errores < 5:
         valor_a_restar = sustraendo(valor,errores)
         valor_inicial_final = valor - valor_a_restar
-        keyboard.press("enter")                
+        keyboard.press("enter")
         time.sleep(0.1)
         keyboard.press("enter")
         time.sleep(0.1)           
+        if es_color_rojo_proceso(red_err_list): 
+            time.sleep(0.1)
+            keyboard.press("enter")               
         for digito in str(valor_inicial_final):
             keyboard.press(digito)    
         keyboard.press("enter")
         time.sleep(1)
-        if es_color_rojo_proceso():
+        if es_color_rojo_proceso(red_err_list):
             errores += 1
             keyboard.press("enter")
             time.sleep(0.1)
@@ -133,17 +137,23 @@ def press_alt_tab_once():
     time.sleep(0.5)
     keyboard.release('alt')
     keyboard.release('tab')
+    
+def click_change_page_save(point_save_page):
+    pyautogui.click(point_save_page)
+def click_change_page_list(point_list_page):
+    pyautogui.click(point_list_page)
+    
         
 def realizar_recosteo(fecha: int, item: int):
     for i in range(1,3):
         for digito in str(fecha):
-            time.sleep(0.2)
+            time.sleep(0.1)
             keyboard.press(digito)
         print()
         time.sleep(0.1)    
         keyboard.press(str(i))
         for digito in str(item):
-            time.sleep(0.2)
+            time.sleep(0.1)
             keyboard.press(digito)
         time.sleep(0.1)
         keyboard.press("enter")
@@ -153,14 +163,14 @@ def realizar_recosteo(fecha: int, item: int):
         keyboard.press("enter")
         time.sleep(0.1)
         keyboard.press("s")
-        while es_color_rojo_proceso_recosteo():
+        while es_color_rojo_proceso_recosteo(red_err_reco):
             time.sleep(0.1)
             keyboard.press("enter")
             time.sleep(0.1)
             keyboard.press("s")
-        while es_color_negro_proceso_recosteo():
+        while es_color_negro_proceso_recosteo(black_process_reco):
             print("esta por terminar")            
-            if es_color_verde_proceso_recosteo_final():
+            if es_color_verde_proceso_recosteo_final(green_end_process_reco):
                 time.sleep(0.1)
                 keyboard.press("enter")
                 time.sleep(0.1)
@@ -171,20 +181,45 @@ def realizar_recosteo(fecha: int, item: int):
                     pass  
         
 def recostear_valor():
-    global primer_proceso
-    time.sleep(4)
+    global primer_proceso 
     if primer_proceso:
         #press_alt_tab_once()                
-        press_alt_tab_twice()
+        #press_alt_tab_twice()
+        click_change_page_save(point_save_page)
+        time.sleep(2)
         realizar_recosteo(fecha,item)
         primer_proceso = False
     else:
-        press_alt_tab_once()
+        click_change_page_save(point_save_page)
+        time.sleep(2)
         realizar_recosteo(fecha,item)
-    press_alt_tab_once()
+    click_change_page_list(point_list_page)
+def config_var_global():
+    global red_err_list, red_err_reco, black_process_reco, green_end_process_reco,point_list_page,point_save_page    
+    print("Registrar coordenadas de la pantalla de error en la lista: ")
+    time.sleep(4)
+    red_err_list = pyautogui.position()
+    print("Registrar coordenadas de la pantalla de error en recosteo: ")
+    time.sleep(4)
+    red_err_reco = pyautogui.position()
+    print("Registrar coordenadas de la pantalla de proceso en recosteo: ")
+    time.sleep(4)
+    black_process_reco = pyautogui.position()
+    print("Registrar coordenadas del fin del proceso en recosteo: ")
+    time.sleep(4)
+    green_end_process_reco = pyautogui.position()
+    print("Registrar coordenadas de la consola con la lista: ")
+    time.sleep(4)
+    point_list_page = pyautogui.position()
+    print("Registrar coordenadas de la consola de recosteo: ")
+    time.sleep(4)
+    point_save_page = pyautogui.position()
+    print("Configuracion terminada terminada")
     
-    
+            
+        
 start= False
+global red_err_list, red_err_reco, black_process_reco, green_end_process_reco,point_list_page,point_save_page    
 global valor_inicial
 global valor_final
 global proceso_abierto
@@ -197,15 +232,19 @@ try:
             start = False
         elif keyboard.is_pressed('F1') or keyboard.is_pressed('F1'):
             start = True
+        elif keyboard.is_pressed('F2') or keyboard.is_pressed('F2'):
+            config_var_global()
         if start:
-            try:
-                valor_inicial = int(input("Ingresa el valor inicial: "))
-                valor_final = int(input("Ingresa el valor final: "))
-                fecha = int(input("Ingresa la fecha: "))
-                item = int(input("Ingresa el item: "))   
-                proceso_abierto = True 
-            except:
-                Exception("Ingresa un valor valido")
+            while True:
+                try:
+                    valor_inicial = int(input("Ingresa el valor inicial: "))
+                    valor_final = int(input("Ingresa el valor final: "))
+                    fecha = int(input("Ingresa la fecha: "))
+                    item = int(input("Ingresa el item: "))
+                    proceso_abierto = True
+                    break  # Si todos los valores son válidos, salimos del bucle while
+                except ValueError:
+                    print("Ingresa un valor válido (debe ser un número entero).")
             primer_proceso = True 
             while valor_final > 0 and valor_inicial > 0 and proceso_abierto:
                 generar_valor(valor_inicial,valor_final)

@@ -1,21 +1,50 @@
 import pyautogui
 import time
 import keyboard
-# Obtener el ancho de la pantalla en píxeles
-ancho_pantalla = pyautogui.size().width
 
-# Obtener la posición actual del cursor en píxeles
+
+def search_valor_unitario(item:int = 0):
+    for _ in range(0,4):
+        time.sleep(0.1)
+        keyboard.press("esc")
+    for digito in str(item):
+        keyboard.press(digito)
+    keyboard.press("enter")
+    time.sleep(0.1)
+    keyboard.press("enter")
+    time.sleep(0.1)
+    keyboard.press("f3")
+    time.sleep(0.1)
+    keyboard.press("enter")
+    time.sleep(0.1)     
+    for _ in range(0,36):
+        time.sleep(0.1)
+        keyboard.press("right")
+
+item = int(input("Ingresa el item: "))
 time.sleep(2)
-posicion_cursor = pyautogui.position()
+search_valor_unitario(item)
 
-# Imprimir los resultados
-print(f"Ancho de la pantalla: {ancho_pantalla} píxeles")
-print(f"Posición del cursor: X={posicion_cursor.x}, Y={posicion_cursor.y} píxeles")
 
-x,y = pyautogui.position()
-color = pyautogui.pixel(x,y)  # Obtiene el color del píxel en las coordenadas dadas
-print(color)
 
+
+
+
+# Obtener el ancho de la pantalla en píxeles
+# ancho_pantalla = pyautogui.size().width
+
+# # Obtener la posición actual del cursor en píxeles
+# time.sleep(2)
+# pyautogui.click(814,543)
+# posicion_cursor = pyautogui.position()
+
+# # Imprimir los resultados
+# print(f"Ancho de la pantalla: {ancho_pantalla} píxeles")
+# print(f"Posición del cursor: X={posicion_cursor.x}, Y={posicion_cursor.y} píxeles")
+
+# x,y = pyautogui.position()
+# color = pyautogui.pixel(x,y)  # Obtiene el color del píxel en las coordenadas dadas
+# print(color)
 # keyboard.press('alt')
 # keyboard.press_and_release('tab')
 # time.sleep(0.5)
